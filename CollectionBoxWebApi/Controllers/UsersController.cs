@@ -10,34 +10,49 @@ using System.Runtime.InteropServices.ComTypes;
 
 namespace CollectionBoxWebApi.Controllers
 {
-    [Produces("application/json")]
-    [Route("api/Todo")]
+    // todo: [Authorize]
+    [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        GenericRepository<Collection> _repository = new GenericRepository<Collection>(); // null is needed ?
-        
-        //public UsersController()
-        //{
-        //    _repository = new GenericRepository<User>();
-        //
-        //public UsersController(IGenericRepository<User> repository)
-        //{
-        //    _repository = repository;
-        //}
+        private UserRepository _repository;
 
-        [Route("~/api/GetAllTodos")]
-        [HttpGet]
-        public IEnumerable<Collection> GetAll()
+        public UsersController(UserRepository repository)
+        {
+            _repository = repository;
+        }
+
+        [HttpGet(Name = "GetAllUsers")]
+        public IEnumerable<User> GetAll()
         {
             return _repository.GetAll();
         }
 
-        [Route("~/api/AddTodo")]
-        [HttpPost]
-        public void AddUser<T>([FromBody] Collection collection)
+        [HttpGet("{id}", Name = "GetUserById")]
+        public User CetById(int id)
         {
-            _repository.Create(collection);
-            //_repository.Save();
+            return _repository.GetById(id);
+        }
+
+        [HttpPost]
+        public void AddUser([FromBody] User user)
+        {
+            _repository.Create(user);
+        }
+
+        [HttpPut("{id}")]
+        public void Update(int id, [FromBody] User user)
+        {
+            //if (user == null || user.Id != id)
+            //{
+            //    return BadRequest();
+            //}
+            _repository.Update(user);
+        }
+
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+            _repository.Delete(id);
         }
     }
 }

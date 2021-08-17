@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace CollectionBoxWebApi.DataLayer.Entities
 {
-    public class Collection
+    public class CollectionGallery
     {
         public int Id { get; set; }
 

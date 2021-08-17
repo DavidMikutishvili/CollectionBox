@@ -2,7 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CollectionBoxWebApi.DataLayer.Entities;
+using CollectionBoxWebApi.DataLayer.GenericRepository;
 using CollectionBoxWebApi.DataLayer.Helpers;
+using CollectionBoxWebApi.DataLayer.Repositories;
+using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -27,6 +31,18 @@ namespace CollectionBoxWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<DataContext>(options =>
+            options.UseSqlServer(connectionString));
+            services.AddTransient<IGenericRepository<User>, GenericRepository<User>>();
+            //services.AddTransient<IGenericRepository<CollectionGallery>, GenericRepository<CollectionGallery>>();
+            services.AddTransient<ICollectionRepository, CollectionRepository>();
+            services.AddTransient<IBookRepository, BookRepository>();
+            services.AddTransient<IAlcoholRepository, AlcoholRepository>();
+            services.AddTransient<IStampRepository, StampRepository>();
+            services.AddTransient<IBookTagRepository, BookTagRepository>();
+            services.AddTransient<IAlcoholTagRepository, AlcoholTagRepository>();
+            services.AddTransient<IStampTagRepository, StampTagRepository>();
             services.AddControllers(); 
         }
 

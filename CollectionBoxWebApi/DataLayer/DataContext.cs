@@ -1,6 +1,7 @@
 ﻿using CollectionBoxWebApi.DataLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace CollectionBoxWebApi.DataLayer.Helpers
         //protected readonly IConfiguration
         public DbSet<User> Users { get; set; }  
         
-        public DbSet<Collection> Collections { get; set; }
+        public DbSet<CollectionGallery> Collections { get; set; }
 
         public DbSet<Book> Books { get; set; }
 
@@ -27,14 +28,10 @@ namespace CollectionBoxWebApi.DataLayer.Helpers
 
         public DbSet<StampTag> StampTags { get; set; }
 
-        public DataContext()
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
-            Database.EnsureCreated();
+           // Database.EnsureCreated(); // ??? working with and without method
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=CollectionBoxDB;Trusted_Connection=True;");
-        }
     }
 }

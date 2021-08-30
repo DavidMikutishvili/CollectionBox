@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace CollectionBoxWebApi.DataLayer.Repositories
 {
-    public interface IGenericRepository<T> where T : class //: IDisposable
+    public interface IGenericRepository<T> where T : class 
     {
-        IEnumerable<T> GetAll(); // получение всех объектов
-        T GetById(int id); // получение одного объекта по id
-        void Create(T item); // создание объекта
-        void Update(T item); // обновление объекта
-        void Delete(int id); // удаление объекта по id
+        IEnumerable<T> GetAll(); 
+        T GetById(int id); 
+        void Create(T item); 
+        void Update(T item); 
+        void Delete(int id); 
     }
 }

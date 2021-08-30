@@ -1,30 +1,31 @@
 ﻿using CollectionBoxWebApi.DataLayer.Entities;
-using CollectionBoxWebApi.DataLayer.Repositories;
 using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CollectionBoxWebApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin, User")]
     public class BooksController : ControllerBase
     {
-        private IBookRepository _repository;
+        private readonly IBookRepository _repository;
 
         public BooksController(IBookRepository repository)
         {
             _repository = repository;
         }
 
+        [AllowAnonymous]
         [HttpGet(Name = "GetAllBooks")]
         public IEnumerable<Book> GetAll()
         {
             return _repository.GetAllBooks();
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}", Name = "GetBookById")]
         public Book CetById(int id)
         {
@@ -32,25 +33,48 @@ namespace CollectionBoxWebApi.Controllers
         }
 
         [HttpPost]
-        public void AddCollection([FromBody] Book book)
+        public IActionResult AddCollection([FromBody] Book book)
         {
-            _repository.CreateBook(book);
+            try
+            {
+                _repository.CreateBook(book);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
 
-        [HttpPut("{id}")]
-        public void Update(int id, [FromBody] Book book)
+        [HttpPut]
+        public IActionResult Update([FromBody] Book book)
         {
-            //if (user == null || user.Id != id)
-            //{
-            //    return BadRequest();
-            //}
-            _repository.UpdateBook(book);
+            try
+            {
+                _repository.UpdateBook(book);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-            _repository.DeleteBook(id);
+            try
+            {
+                _repository.DeleteBook(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
     }
 }

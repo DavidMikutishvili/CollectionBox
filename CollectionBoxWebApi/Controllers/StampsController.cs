@@ -1,29 +1,31 @@
 ﻿using CollectionBoxWebApi.DataLayer.Entities;
 using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CollectionBoxWebApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin, User")]
     public class StampsController : ControllerBase
     {
-        private IStampRepository _repository;
+        private readonly IStampRepository _repository;
 
         public StampsController(IStampRepository repository)
         {
             _repository = repository;
         }
 
+        [AllowAnonymous]
         [HttpGet(Name = "GetAllStamps")]
         public IEnumerable<Stamp> GetAll()
         {
             return _repository.GetAllStamps();
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}", Name = "GetStampById")]
         public Stamp CetById(int id)
         {
@@ -31,25 +33,48 @@ namespace CollectionBoxWebApi.Controllers
         }
 
         [HttpPost]
-        public void AddCollection([FromBody] Stamp stamp)
+        public IActionResult AddCollection([FromBody] Stamp stamp)
         {
-            _repository.CreateStamp(stamp);
+            try
+            {
+                _repository.CreateStamp(stamp);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
 
-        [HttpPut("{id}")]
-        public void Update(int id, [FromBody] Stamp stamp)
+        [HttpPut]
+        public IActionResult Update([FromBody] Stamp stamp)
         {
-            //if (user == null || user.Id != id)
-            //{
-            //    return BadRequest();
-            //}
-            _repository.UpdateStamp(stamp);
+            try
+            {
+                _repository.UpdateStamp(stamp);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-            _repository.DeleteStamp(id);
+            try
+            {
+                _repository.DeleteStamp(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
     }
 }

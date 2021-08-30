@@ -2,16 +2,13 @@
 using CollectionBoxWebApi.DataLayer.GenericRepository;
 using CollectionBoxWebApi.DataLayer.Helpers;
 using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CollectionBoxWebApi.DataLayer.Repositories
 {
     public class BookTagRepository : GenericRepository<BookTag>, IBookTagRepository
     {
-        public BookTagRepository(DataContext context) : base(context)
+        public BookTagRepository(DataDbContext context) : base(context)
         {
         }
 

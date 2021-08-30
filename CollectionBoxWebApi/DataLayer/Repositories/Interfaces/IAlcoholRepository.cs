@@ -1,8 +1,6 @@
 ﻿using CollectionBoxWebApi.DataLayer.Entities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace CollectionBoxWebApi.DataLayer.Repositories.Interfaces
 {
@@ -13,5 +11,7 @@ namespace CollectionBoxWebApi.DataLayer.Repositories.Interfaces
         void CreateAlcohol(Alcohol alcohol);
         void UpdateAlcohol(Alcohol alcohol);
         void DeleteAlcohol(int id);
+
+
     }
 }

@@ -2,16 +2,13 @@
 using CollectionBoxWebApi.DataLayer.GenericRepository;
 using CollectionBoxWebApi.DataLayer.Helpers;
 using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CollectionBoxWebApi.DataLayer.Repositories
 {
     public class StampRepository : GenericRepository<Stamp>, IStampRepository
     {
-        public StampRepository(DataContext context) : base(context)
+        public StampRepository(DataDbContext context) : base(context)
         {
         }
 

@@ -1,20 +1,18 @@
 ﻿using CollectionBoxWebApi.DataLayer.Helpers;
 using CollectionBoxWebApi.DataLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace CollectionBoxWebApi.DataLayer.GenericRepository
 {
     public class GenericRepository<T> : IGenericRepository<T>
         where T : class
     {
-        private DataContext _context; 
+        private DataDbContext _context; 
         private DbSet<T> _table;
 
-        public GenericRepository(DataContext context)
+        public GenericRepository(DataDbContext context)
         {
             _context = context;
             _table = _context.Set<T>();
@@ -26,7 +24,7 @@ namespace CollectionBoxWebApi.DataLayer.GenericRepository
             _context.SaveChanges();
         }
 
-        public void Delete(int id)  // todo: save
+        public void Delete(int id) 
         {
             T existing = _table.Find(id);
             _table.Remove(existing);
@@ -43,16 +41,11 @@ namespace CollectionBoxWebApi.DataLayer.GenericRepository
             return _table.Find(id);
         }
 
-        public void Update(T item) // todo: save
+        public void Update(T item)
         {
             _table.Attach(item);
             _context.Entry(item).State = EntityState.Modified;
             _context.SaveChanges();
         }
-
-        //public void Dispose()
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }

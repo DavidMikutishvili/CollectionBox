@@ -1,29 +1,31 @@
 ﻿using CollectionBoxWebApi.DataLayer.Entities;
 using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CollectionBoxWebApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin, User")]
     public class BookTagsController : ControllerBase
     {
-        private IBookTagRepository _repository;
+        private readonly IBookTagRepository _repository;
 
         public BookTagsController(IBookTagRepository repository)
         {
             _repository = repository;
         }
 
+        [AllowAnonymous]
         [HttpGet(Name = "GetAllBookTags")]
         public IEnumerable<BookTag> GetAll()
         {
             return _repository.GetAllTags();
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}", Name = "GetBookTagById")]
         public BookTag CetById(int id)
         {
@@ -36,20 +38,34 @@ namespace CollectionBoxWebApi.Controllers
             _repository.CreateTag(tag);
         }
 
-        [HttpPut("{id}")]
-        public void Update(int id, [FromBody] BookTag tag)
+        [HttpPut]
+        public IActionResult Update([FromBody] BookTag tag)
         {
-            //if (user == null || user.Id != id)
-            //{
-            //    return BadRequest();
-            //}
-            _repository.UpdateTag(tag);
+            try
+            {
+                _repository.UpdateTag(tag);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-            _repository.DeleteTag(id);
+            try
+            {
+                _repository.DeleteTag(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
     }
 }

@@ -2,16 +2,13 @@
 using CollectionBoxWebApi.DataLayer.GenericRepository;
 using CollectionBoxWebApi.DataLayer.Helpers;
 using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CollectionBoxWebApi.DataLayer.Repositories
 {
     public class AlcoholTagRepository : GenericRepository<AlcoholTag>, IAlcoholTagRepository
     {
-        public AlcoholTagRepository(DataContext context) : base(context)
+        public AlcoholTagRepository(DataDbContext context) : base(context)
         {
         }
 

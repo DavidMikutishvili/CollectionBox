@@ -1,21 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using CollectionBoxWebApi.DataLayer.Entities;
-using CollectionBoxWebApi.DataLayer.GenericRepository;
+using System.Text;
+using CollectionBoxWebApi.DataLayer;
+using CollectionBoxWebApi.DataLayer.Authentication;
 using CollectionBoxWebApi.DataLayer.Helpers;
 using CollectionBoxWebApi.DataLayer.Repositories;
 using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 namespace CollectionBoxWebApi
 {
@@ -25,17 +22,53 @@ namespace CollectionBoxWebApi
         {
             Configuration = configuration;
         }
-
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<DataContext>(options =>
-            options.UseSqlServer(connectionString));
-            services.AddTransient<IGenericRepository<User>, GenericRepository<User>>();
-            //services.AddTransient<IGenericRepository<CollectionGallery>, GenericRepository<CollectionGallery>>();
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");     
+            services.AddDbContext<DataDbContext>(options =>
+                options.UseSqlServer(connectionString));
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
+            services.AddControllers();
+
+            services.AddSpaStaticFiles(configuration => {
+                configuration.RootPath = "ClientApp/dist";
+            });
+
+            services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+                options.Password.RequiredLength = 1;   
+                options.Password.RequireNonAlphanumeric = false;   
+                options.Password.RequireLowercase = false; 
+                options.Password.RequireUppercase = false; 
+                options.Password.RequireDigit = false; 
+            })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders(); 
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+ 
+            .AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = Configuration["JWT:ValidAudience"],
+                    ValidIssuer = Configuration["JWT:ValidIssuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
+                };
+            });
+
             services.AddTransient<ICollectionRepository, CollectionRepository>();
             services.AddTransient<IBookRepository, BookRepository>();
             services.AddTransient<IAlcoholRepository, AlcoholRepository>();
@@ -43,12 +76,10 @@ namespace CollectionBoxWebApi
             services.AddTransient<IBookTagRepository, BookTagRepository>();
             services.AddTransient<IAlcoholTagRepository, AlcoholTagRepository>();
             services.AddTransient<IStampTagRepository, StampTagRepository>();
-            services.AddControllers(); 
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
+        {    
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -58,11 +89,18 @@ namespace CollectionBoxWebApi
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
-            {
+            { 
                 endpoints.MapControllers();
+            });
+
+            app.UseSpaStaticFiles();
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
             });
         }
     }

@@ -1,29 +1,31 @@
 ﻿using CollectionBoxWebApi.DataLayer.Entities;
 using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CollectionBoxWebApi.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin, User")]
     public class AlcoholController : ControllerBase
     {
-        private IAlcoholRepository _repository;
+        private readonly IAlcoholRepository _repository;
 
         public AlcoholController(IAlcoholRepository repository)
         {
             _repository = repository;
         }
 
+        [AllowAnonymous]
         [HttpGet(Name = "GetAllAlcohol")]
         public IEnumerable<Alcohol> GetAll()
         {
             return _repository.GetAllAlcohol();
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}", Name = "GetAlcoholById")]
         public Alcohol CetById(int id)
         {
@@ -31,25 +33,48 @@ namespace CollectionBoxWebApi.Controllers
         }
 
         [HttpPost]
-        public void AddCollection([FromBody] Alcohol alcohol)
+        public IActionResult AddCollection([FromBody] Alcohol alcohol)
         {
-            _repository.CreateAlcohol(alcohol);
+            try
+            {
+                _repository.CreateAlcohol(alcohol);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
 
-        [HttpPut("{id}")]
-        public void Update(int id, [FromBody] Alcohol alcohol)
+        [HttpPut]
+        public IActionResult Update([FromBody] Alcohol alcohol)
         {
-            //if (user == null || user.Id != id)
-            //{
-            //    return BadRequest();
-            //}
-            _repository.UpdateAlcohol(alcohol);
+            try
+            {
+                _repository.UpdateAlcohol(alcohol);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-            _repository.DeleteAlcohol(id);
+            try
+            {
+                _repository.DeleteAlcohol(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
     }
 }

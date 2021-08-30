@@ -1,29 +1,31 @@
 ﻿using CollectionBoxWebApi.DataLayer.Entities;
 using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CollectionBoxWebApi.Controllers
 {
     [Route("api/[controller]")]
-    public class StampTagsController
+    [Authorize(Roles = "Admin, User")]
+    public class StampTagsController : ControllerBase
     {
-        private IStampTagRepository _repository;
+        private readonly IStampTagRepository _repository;
 
         public StampTagsController(IStampTagRepository repository)
         {
             _repository = repository;
         }
 
+        [AllowAnonymous]
         [HttpGet(Name = "GetAllStampTags")]
         public IEnumerable<StampTag> GetAll()
         {
             return _repository.GetAllTags();
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}", Name = "GetStampTagById")]
         public StampTag CetById(int id)
         {
@@ -31,25 +33,53 @@ namespace CollectionBoxWebApi.Controllers
         }
 
         [HttpPost]
-        public void AddCollection([FromBody] StampTag tag)
+        public IActionResult AddCollection([FromBody] StampTag tag)
         {
-            _repository.CreateTag(tag);
+            try
+            {
+                _repository.CreateTag(tag);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
 
-        [HttpPut("{id}")]
-        public void Update(int id, [FromBody] StampTag tag)
+        [HttpPut]
+        public IActionResult Update([FromBody] StampTag tag)
         {
-            //if (user == null || user.Id != id)
-            //{
-            //    return BadRequest();
-            //}
-            _repository.UpdateTag(tag);
+            try
+            {
+                _repository.UpdateTag(tag);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
+        }
+
+        private IActionResult BadRequest(Exception innerException)
+        {
+            throw new NotImplementedException();
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-            _repository.DeleteTag(id);
+            try
+            {
+                _repository.DeleteTag(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
     }
 }

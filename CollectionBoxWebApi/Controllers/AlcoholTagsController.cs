@@ -1,29 +1,31 @@
 ﻿using CollectionBoxWebApi.DataLayer.Entities;
 using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CollectionBoxWebApi.Controllers
 {
     [Route("api/[controller]")]
-    public class AlcoholTagsController
+    [Authorize(Roles = "Admin, User")]
+    public class AlcoholTagsController : ControllerBase
     {
-        private IAlcoholTagRepository _repository;
+        private readonly IAlcoholTagRepository _repository;
 
         public AlcoholTagsController(IAlcoholTagRepository repository)
         {
             _repository = repository;
         }
 
+        [AllowAnonymous]
         [HttpGet(Name = "GetAllAlcoholTags")]
         public IEnumerable<AlcoholTag> GetAll()
         {
             return _repository.GetAllTags();
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}", Name = "GetAlcoholTagById")]
         public AlcoholTag CetById(int id)
         {
@@ -31,25 +33,48 @@ namespace CollectionBoxWebApi.Controllers
         }
 
         [HttpPost]
-        public void AddCollection([FromBody] AlcoholTag tag)
+        public IActionResult AddCollection([FromBody] AlcoholTag tag)
         {
-            _repository.CreateTag(tag);
+            try
+            {
+                _repository.CreateTag(tag);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
 
-        [HttpPut("{id}")]
-        public void Update(int id, [FromBody] AlcoholTag tag)
+        [HttpPut]
+        public IActionResult Update([FromBody] AlcoholTag tag)
         {
-            //if (user == null || user.Id != id)
-            //{
-            //    return BadRequest();
-            //}
-            _repository.UpdateTag(tag);
+            try
+            {
+                _repository.UpdateTag(tag);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-            _repository.DeleteTag(id);
+            try
+            {
+                _repository.DeleteTag(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException);
+            }
+
+            return Ok();
         }
     }
 }

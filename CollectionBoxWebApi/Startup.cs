@@ -1,7 +1,6 @@
 using System.Text;
 using CollectionBoxWebApi.DataLayer;
 using CollectionBoxWebApi.DataLayer.Authentication;
-using CollectionBoxWebApi.DataLayer.Helpers;
 using CollectionBoxWebApi.DataLayer.Repositories;
 using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -27,9 +26,7 @@ namespace CollectionBoxWebApi
         public void ConfigureServices(IServiceCollection services)
         {
             var connectionString = Configuration.GetConnectionString("DefaultConnection");     
-            services.AddDbContext<DataDbContext>(options =>
-                options.UseSqlServer(connectionString));
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
             services.AddControllers();
@@ -45,7 +42,7 @@ namespace CollectionBoxWebApi
                 options.Password.RequireUppercase = false; 
                 options.Password.RequireDigit = false; 
             })
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders(); 
 
             services.AddAuthentication(options =>

@@ -1,6 +1,5 @@
 ﻿using CollectionBoxWebApi.DataLayer.Entities;
 using CollectionBoxWebApi.DataLayer.GenericRepository;
-using CollectionBoxWebApi.DataLayer.Helpers;
 using System.Collections.Generic;
 
 namespace CollectionBoxWebApi.DataLayer.Repositories
@@ -8,7 +7,7 @@ namespace CollectionBoxWebApi.DataLayer.Repositories
     public class CollectionRepository : GenericRepository<CollectionGallery>, 
                                         ICollectionRepository
     {
-        public CollectionRepository(DataDbContext context) : base(context)
+        public CollectionRepository(AppDbContext context) : base(context)
         {
         }
 

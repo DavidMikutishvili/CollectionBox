@@ -1,5 +1,4 @@
-﻿using CollectionBoxWebApi.DataLayer.Helpers;
-using CollectionBoxWebApi.DataLayer.Repositories;
+﻿using CollectionBoxWebApi.DataLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +8,10 @@ namespace CollectionBoxWebApi.DataLayer.GenericRepository
     public class GenericRepository<T> : IGenericRepository<T>
         where T : class
     {
-        private DataDbContext _context; 
-        private DbSet<T> _table;
+        private readonly AppDbContext _context; 
+        private readonly DbSet<T> _table;
 
-        public GenericRepository(DataDbContext context)
+        public GenericRepository(AppDbContext context)
         {
             _context = context;
             _table = _context.Set<T>();

@@ -2,7 +2,9 @@ using System.Text;
 using CollectionBoxWebApi.DataLayer;
 using CollectionBoxWebApi.DataLayer.Authentication;
 using CollectionBoxWebApi.DataLayer.Repositories;
+using CollectionBoxWebApi.DataLayer.Repositories.Implementations;
 using CollectionBoxWebApi.DataLayer.Repositories.Interfaces;
+using CollectionBoxWebApi.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -21,26 +23,30 @@ namespace CollectionBoxWebApi
         {
             Configuration = configuration;
         }
+
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             var connectionString = Configuration.GetConnectionString("DefaultConnection");     
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
             services.AddControllers();
 
-            services.AddSpaStaticFiles(configuration => {
-                configuration.RootPath = "ClientApp/dist";
-            });
+            //services.AddSpaStaticFiles(configuration => {
+            //    configuration.RootPath = "ClientApp/dist";
+            //});
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options => {
                 options.Password.RequiredLength = 1;   
                 options.Password.RequireNonAlphanumeric = false;   
                 options.Password.RequireLowercase = false; 
                 options.Password.RequireUppercase = false; 
-                options.Password.RequireDigit = false; 
+                options.Password.RequireDigit = false;
+                options.User.RequireUniqueEmail = true; 
             })
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders(); 
@@ -66,6 +72,9 @@ namespace CollectionBoxWebApi
                 };
             });
 
+            services.AddTransient<JwtService>();
+
+            services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<ICollectionRepository, CollectionRepository>();
             services.AddTransient<IBookRepository, BookRepository>();
             services.AddTransient<IAlcoholRepository, AlcoholRepository>();
@@ -86,6 +95,16 @@ namespace CollectionBoxWebApi
 
             app.UseRouting();
 
+            app.UseCors(options => options
+                .WithOrigins(new[]{"http://localhost:3000",
+                                   "http://localhost:8080",
+                                   "http://localhost:8081",
+                                   "http://localhost:4200"})
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials()
+               );
+
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -94,11 +113,11 @@ namespace CollectionBoxWebApi
                 endpoints.MapControllers();
             });
 
-            app.UseSpaStaticFiles();
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "ClientApp";
-            });
+            //app.UseSpaStaticFiles();
+            //app.UseSpa(spa =>
+            //{
+            //    spa.Options.SourcePath = "ClientApp";
+            //});
         }
     }
 }

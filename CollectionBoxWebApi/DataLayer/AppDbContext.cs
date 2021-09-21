@@ -1,6 +1,5 @@
 ﻿using CollectionBoxWebApi.DataLayer.Authentication;
 using CollectionBoxWebApi.DataLayer.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,13 +28,9 @@ namespace CollectionBoxWebApi.DataLayer
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            //builder.Entity<Project>(entity =>
-            //{
-            //    entity.Property(e => e.Name)
-            //        .IsRequired()
-            //        .HasMaxLength(50);
-            //});
             base.OnModelCreating(builder);
+
+            builder.Entity<ApplicationUser>(entity => { entity.HasIndex(e => e.Email).IsUnique(); });
         }
     }
 }

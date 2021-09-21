@@ -5,6 +5,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DataLayer\Entities\DTO\**" />
+    <Content Remove="DataLayer\Entities\DTO\**" />
+    <EmbeddedResource Remove="DataLayer\Entities\DTO\**" />
+    <None Remove="DataLayer\Entities\DTO\**" />
+    <TypeScriptCompile Remove="DataLayer\Entities\DTO\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20210913154059_InitialCreate.cs" />
+    <Compile Remove="Migrations\20210913154059_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20210913154511_InitialCreate.cs" />
+    <Compile Remove="Migrations\20210913154511_InitialCreate.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.18" />
@@ -22,10 +37,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="3.0.0" />
+    <PackageReference Include="VisioForge.DotNet.Core.TRIAL" Version="14.2.25" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataLayer\Entities\DTO\" />
+    <Folder Include="DataLayer\Migrations\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 
